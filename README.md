@@ -25,3 +25,26 @@ Operational problem: Detecting payment timeouts and degraded performance, includ
 
 Purpose of AIOps: To analyze service telemetry, identify anomalies automatically, and publish them as events so operational teams can detect and respond to incidents quickly.
 
+Task 2: Analyse Logs and Metrics
+
+1. Metric fields
+   - `response_time_ms`
+   - `cpu_percent1`
+   - `memory_percent`
+
+2. Log information
+   - `log_level` identifies the severity, such as `INFO` or `ERROR`.
+   - `message` describes the event, such as successful processing or a timeout.
+   - `service` identifies the source service.
+
+3. Timestamp usage
+   - `timestamp` records when each observation occurred.
+   - Observations are recorded at one-minute intervals from `10:00` to `10:09`, allowing metric and log changes to be tracked over time.
+
+4. Normal behaviour
+   - `10:00`–`10:04` and `10:07`–`10:09`.
+   - Response times are approximately `120–150 ms`, CPU is `42–50%`, memory is `51–57%`, and logs report successful processing at `INFO` level.
+
+5. Unusual behaviour
+   - `10:05`: Response time rises to `610 ms` and an `ERROR` reports a payment service timeout.
+   - `10:06`: Response time rises to `640 ms`, CPU reaches `94%`, memory reaches `91%`, and an `ERROR` reports a database connection timeout. This is the strongest anomaly.
