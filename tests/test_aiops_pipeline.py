@@ -42,6 +42,25 @@ def test_anomalous_record_is_detected():
     assert event["type"] == "ANOMALY"
 
 
+def test_error_log_is_detected_without_metric_anomaly():
+    detector = AnomalyDetector()
+
+    record = {
+        "timestamp": "2026-09-20T10:05:30",
+        "service": "payment-service",
+        "response_time_ms": 200,
+        "cpu_percent": 40,
+        "memory_percent": 50,
+        "log_level": "ERROR",
+        "message": "Payment request failed"
+    }
+
+    event = detector.detect(record)
+
+    assert event is not None
+    assert event["reasons"] == ["Error log detected"]
+
+
 def test_producer_publishes_event():
     topic = EventTopic("anomaly-events")
     producer = EventProducer(topic)
@@ -70,3 +89,14 @@ def test_consumer_receives_event():
     messages = consumer.consume()
 
     assert len(messages) == 1
+
+
+def test_pipeline_delivers_detected_events_downstream():
+    data_file = Path(__file__).parent.parent / "data" / "service_data.json"
+
+    result = run_pipeline(data_file)
+
+    assert result["records_processed"] == 10
+    assert len(result["anomalies_detected"]) == 2
+    assert result["events_consumed"] == result["anomalies_detected"]
+    assert all(event["type"] == "ANOMALY" for event in result["events_consumed"])

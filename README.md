@@ -104,4 +104,62 @@ Validation: 9 tests passe.
 
 
 Task 5: Investigate and Correct the Workflow
+
+Problems identified and corrected:
+
+1. `AnomalyDetector` was checking for `WARNING` logs, but the operational data uses
+   `ERROR` for payment and database failures. The detector now flags `ERROR` logs,
+   including an error-only event when metrics are normal.
+2. `aiops_pipeline` published to `service-events` while the consumer listened to
+   `anomaly-events`. The producer and consumer need to share the same `anomaly-events`
+   topic.
+
+Changed Components: `AnomalyDetector`, `EventTopic`, `EventProducer`,
+`EventConsumer`, and `run_pipeline`.
+
+Verification:The test  passed with 10 tests.
+
 Task 6: Execute the End-to-End Pipeline
+
+Command:
+
+```
+PYTHONPATH=/workspaces/github-skills-challenge python -m pytest -q && \
+PYTHONPATH=/workspaces/github-skills-challenge/src \
+python /workspaces/github-skills-challenge/src/aiops_pipeline.py
+```
+
+Result: 10 tests passed; 10 records processed; 2 anomalies detected and consumed.
+
+
+Task 7: Demonstrate the Complete AIOps Flow
+
+Flow:
+
+`Operational Data -> Anomaly Detection -> Event -> Producer -> Topic -> Consumer -> AIOps`
+
+1.Operational data processed: `service_data.json` supplied 10 observations to
+   `run_pipeline`.
+2. Anomalous behaviour detected: `AnomalyDetector` identified the observations
+   at `10:05` and `10:06` because of high response time, resource utilization, and
+   `ERROR` logs.
+3. Anomaly event generated: Each flagged observation became an event containing
+   its timestamp, service, type, reasons, and original source record.
+4. Event published: `EventProducer` published both events to the in-memory
+   `anomaly-events` topic.
+5. Event consumed: `EventConsumer` read both events from that same topic.
+6. Event processed successfully: `run_pipeline` returned both consumed events
+   as `events_consumed`.
+7. Final AIOps output: The report identified `payment-service` timeouts and
+   showed the metric and log reasons for each anomaly.
+
+Observed result:
+
+Records processed: 10
+Anomalies detected: 2
+Events consumed: 2
+10:05: High response time, Error log detected
+10:06: High response time, High CPU utilization, High memory utilization, Error log detected
+
+
+
