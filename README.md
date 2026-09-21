@@ -48,3 +48,39 @@ Task 2: Analyse Logs and Metrics
 5. Unusual behaviour
    - `10:05`: Response time rises to `610 ms` and an `ERROR` reports a payment service timeout.
    - `10:06`: Response time rises to `640 ms`, CPU reaches `94%`, memory reaches `91%`, and an `ERROR` reports a database connection timeout. This is the strongest anomaly.
+
+
+TASK 3 : Identify Anomalies
+
+Total Records: 10 r
+Anomalies detected: 2
+Events consumed and displayed: 2
+
+Detection report
+
+- `10:05`: Anomaly detected for `payment-service`.
+  - Response time: `610 ms`, above the `500 ms` threshold.
+  - Log level: `ERROR`.
+  - Message: `Payment service timeout`.
+- `10:06`: Anomaly detected for `payment-service`.
+  - Response time: `640 ms`.
+  - CPU: `94%`, above the `80%` threshold.
+  - Memory: `91%`, above the `80%` threshold.
+  - Log level: `ERROR`.
+  - Message: `Database connection timeout`.
+
+Analysis
+
+- The normal observations from `10:00`–`10:04` and `10:07`–`10:09` were not flagged.
+- No expected anomaly appears to have been missed in the supplied data.
+- No normal event was incorrectly flagged.
+- The event reasons and retained source record provide sufficient context for understanding each flag.
+
+Limitation
+
+The detector uses fixed thresholds and only checks `ERROR` logs. It could be improved with ml based anomaly detection for adaptive baseline.
+
+
+Task 4: Verify the AIOps Event Flow
+Task 5: Investigate and Correct the Workflow
+Task 6: Execute the End-to-End Pipeline
