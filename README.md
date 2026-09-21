@@ -82,5 +82,26 @@ The detector uses fixed thresholds and only checks `ERROR` logs. It could be imp
 
 
 Task 4: Verify the AIOps Event Flow
+
+Component roles
+
+- Event/message: The anomaly dictionary created by `AnomalyDetector`.
+- Producer: Publishes each detected event.
+- Topic: In-memory `anomaly-events` storing published events.
+- Consumer: Reads events from the shared topic.
+- Downstream AIOps component: `run_pipeline`, which returns and displays the consumed events.
+
+Verified flow
+
+1. The detector identified 2 anomalies.
+2. Each anomaly became an event.
+3. The producer published both events.
+4. The shared topic stored both events.
+5. The consumer received both events.
+6. `run_pipeline` returned and displayed them downstream.
+
+Validation: 9 tests passe.
+
+
 Task 5: Investigate and Correct the Workflow
 Task 6: Execute the End-to-End Pipeline
